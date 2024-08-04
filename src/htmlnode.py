@@ -1,7 +1,11 @@
 def main():
     examplenode = HTMLNode("p", "Hello paragraph", None, {"href": "hey.com", "key": "value"})
-    print(examplenode.props_to_html())
-    print(examplenode)
+    # print(examplenode.props_to_html())
+    # print(examplenode)
+    child1 = HTMLNode()
+    child2 = HTMLNode("h2")
+    node2 = HTMLNode("h1", "Title of paragraph",[child1, child2], {"target": "_blank", "some_key": "some_value"})
+    print(node2)
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
