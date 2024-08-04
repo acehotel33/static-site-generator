@@ -11,7 +11,7 @@ def main():
 
 
 class TextNode:
-    def __init__(self, text, text_type, url="None"):
+    def __init__(self, text, text_type, url=None):
         self.text = text # str: content
         self.text_type = text_type # str: "bold" or "italic" etc
         self.url = url # url of the image, default: None

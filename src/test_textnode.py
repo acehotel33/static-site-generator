@@ -19,7 +19,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(node, node2)
 
 
-    def test_uneq(self):
+    def test_uneq2(self):
         node = TextNode("This is a text node", "bold")
         node2 = TextNode("This is a text node", "bold", "yo")
         self.assertNotEqual(node, node2)
