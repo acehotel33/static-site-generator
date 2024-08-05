@@ -1,3 +1,5 @@
+from textnode import TextNode
+
 def main():
     child1 = LeafNode("h2", "Title of paragraph")
     child2 = LeafNode("p", "Hello paragraph", {"href": "hey.com", "key": "value"})
@@ -12,7 +14,21 @@ def main():
             LeafNode(None, "Normal text"),
         ],
     )
-    
+    boldtext = TextNode('This is bold', 'bold')
+    boldtext_to_leaf = text_node_to_html_node(boldtext)
+    print(boldtext_to_leaf.to_html())
+
+    codetext = TextNode('code beep boop', 'code')
+    codetext_to_leaf = text_node_to_html_node(codetext)
+    print(codetext_to_leaf.to_html())
+
+    linktext = TextNode('Click to download', 'link', 'www.download.com')
+    linktext_to_leaf = text_node_to_html_node(linktext)
+    print(linktext_to_leaf.to_html())
+
+    imagetext = TextNode('Alt text for image', 'image', 'www.image.com')
+    imagetext_to_leaf = text_node_to_html_node(imagetext)
+    print(imagetext_to_leaf.to_html())
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -66,7 +82,35 @@ class LeafNode(HTMLNode):
             return self.value
         open_tag = f"<{self.tag}{self.props_to_html()}>"
         close_tag = f"</{self.tag}>"
+        if self.tag=="img":
+            close_tag = ""
         html = open_tag + self.value + close_tag
         return html
 
-main()
+def text_node_to_html_node(text_node):
+    possible_types = ["text", "bold", "italic", "code", "link", "image"]
+    if text_node.text_type not in possible_types:
+        raise Exception("Incompatible text node type")
+    value = text_node.text
+    props = None
+    if text_node.text_type == "text":
+        tag = None
+    elif text_node.text_type == "bold":
+        tag = "b"
+    elif text_node.text_type == "italic":
+        tag = "i"
+    elif text_node.text_type == "code":
+        tag = "code"
+    elif text_node.text_type == "link":
+        tag = "a"
+        props = {"href": text_node.url}
+    elif text_node.text_type == "image":
+        tag = "img"
+        props = {"src": text_node.url, "alt": text_node.text}
+        value = ""
+    leaf_node_of_text = LeafNode(tag, value, props)
+    return leaf_node_of_text
+
+
+if __name__ == "__main__":
+    main()

@@ -5,9 +5,9 @@ def main():
     example4 = TextNode('','')
     dummy = TextNode('This is a text node', 'bold', 'https://www.boot.dev')
 
-    print(example.__repr__())
-    print(example2.__repr__())
-    print(dummy.__repr__())
+    print(example)
+    print(example2)
+    print(dummy)
 
 
 class TextNode:
@@ -23,8 +23,5 @@ class TextNode:
         return f"TextNode({self.text}, {self.text_type}, {self.url})"
 
 
-
-
-
-
-main()
+if __name__ == "__main__":
+    main()
