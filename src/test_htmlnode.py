@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html(self):
@@ -36,6 +36,39 @@ class TestLeafNode(unittest.TestCase):
         expected = "<p>This is a paragraph of text</p>"
         self.assertEqual(actual, expected)
 
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        actual = node.to_html()
+        expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        self.assertEqual(actual, expected)
+
+    def test_to_html_nested_parent(self):
+        node2 = ParentNode(
+            "div", 
+            [LeafNode("a", "Link!", {"href":"www.link.com"})]
+        )
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                node2,
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        actual = node.to_html()
+        expected = '<p><b>Bold text</b><div><a href="www.link.com">Link!</a></div><i>italic text</i>Normal text</p>'
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
