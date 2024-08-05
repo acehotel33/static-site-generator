@@ -1,11 +1,9 @@
 def main():
-    examplenode = HTMLNode("p", "Hello paragraph", None, {"href": "hey.com", "key": "value"})
-    # print(examplenode.props_to_html())
-    # print(examplenode)
+    leafnode = LeafNode("p", "Hello paragraph", {"href": "hey.com", "key": "value"})
     child1 = HTMLNode()
     child2 = HTMLNode("h2")
     node2 = HTMLNode("h1", "Title of paragraph",[child1, child2], {"target": "_blank", "some_key": "some_value"})
-    print(node2)
+    print(leafnode.to_html())
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -29,5 +27,19 @@ class HTMLNode:
             new_prop = f" {prop}" + "=" + f"\"{self.props[prop]}\""
             prop_string += new_prop
         return prop_string
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag=None, value=None, props=None):
+        if value==None:
+            raise ValueError("The 'value' parameter is required")
+        super().__init__(tag, value, None, props)
+
+    def to_html(self):
+        if self.tag==None:
+            return value
+        open_tag = f"<{self.tag}{self.props_to_html()}>"
+        close_tag = f"</{self.tag}>"
+        html = open_tag + self.value + close_tag
+        return html
 
 main()
