@@ -1,3 +1,6 @@
+from extract import extract_markdown_images, extract_markdown_links
+
+
 def main():
     example = TextNode('hi', 'bold')
     example2 = TextNode('no', 'bold')
@@ -57,7 +60,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.extend(nodes) 
     return new_nodes
 
-# ['', 'code block', ' at the start and ', 'at the end', '']
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != "text":
+            new_nodes.append(node)
+        else:
+            links_list_of_tuples = extract_markdown_links(node.text)
+            images_list_of_tuples = extract_markdown_images(node.text)
+    return new_nodes
 
 if __name__ == "__main__":
     main()

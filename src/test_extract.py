@@ -39,3 +39,14 @@ class TestExtractMarkdownImages(unittest.TestCase):
             extract_markdown_images(text)
         self.assertEqual(str(context.exception), "Incorrect Markdown syntax: missing '(' or ')'")
     
+    def test_image_extract_from_link(self):
+        text = "This is link [rick roll](https://i.imgur.com/aKaOqIh.gif)"
+        actual = extract_markdown_images(text)
+        expected = []
+        self.assertEqual(actual, expected)
+
+    def test_link_extract_from_image(self):
+        text = "This is image ![rick roll](https://i.imgur.com/aKaOqIh.gif)"
+        actual = extract_markdown_links(text)
+        expected = []
+        self.assertEqual(actual, expected)

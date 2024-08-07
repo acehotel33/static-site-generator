@@ -9,7 +9,7 @@ def main():
 
 def extract_markdown_images(text):
     list_of_tuples = []
-    list_of_regex = re.findall(r"!\[.*?\]\(.*?\)", text)
+    list_of_regex = re.findall(r"\!\[.*?\]\(.*?\)", text)
     for match in list_of_regex:
         if (match.count('[') + match.count(']')) % 2 != 0:
             raise Exception("Incorrect Markdown syntax: missing '[' or ']'")
@@ -22,7 +22,7 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     list_of_tuples = []
-    list_of_regex = re.findall(r"\[.*?\]\(.*?\)", text)
+    list_of_regex = re.findall(r"\ \[.*?\]\(.*?\)", text)
     for match in list_of_regex:
         if (match.count('[') + match.count(']')) % 2 != 0:
             raise Exception("Incorrect Markdown syntax: missing '[' or ']'")
