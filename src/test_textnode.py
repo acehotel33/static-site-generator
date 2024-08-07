@@ -82,17 +82,5 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         expected = [node]
         self.assertEqual(new_nodes, expected)
 
-
-# node1 = TextNode("`code block` at the start and `at the end`", text_type_text)
-# # new_nodes = split_nodes_delimiter([node], "`", text_type_code)
-# # print(new_nodes)
-# node2 = TextNode("This is text with a `code block` word", text_type_text)
-# # new_nodes2 = split_nodes_delimiter([node2], "`",  text_type_code)
-
-# node3 = TextNode("This is a regular text", text_type_text)
-# new_nodes = split_nodes_delimiter([node1, node2, node3], "`", text_type_code)
-# print(new_nodes)
-
-
 if __name__ == "__main__":
     unittest.main()
