@@ -1,30 +1,26 @@
+import re
 from extract import extract_markdown_images, extract_markdown_links
 
 
 def main():
-    example = TextNode('hi', 'bold')
-    example2 = TextNode('no', 'bold')
-    example3 = TextNode('hi', 'bold')
-    example4 = TextNode('','')
-    dummy = TextNode('This is a text node', 'bold', 'https://www.boot.dev')
-
-    node1 = TextNode("`code block` at the start and `at the end`", text_type_text)
-    # new_nodes = split_nodes_delimiter([node], "`", text_type_code)
+    node = TextNode(
+    "These are images ![alt text](https://www.boot.dev) and ![alt text 2](https://www.youtube.com/@bootdotdev)", text_type_text)
+    new_nodes = split_nodes_image([node])
     # print(new_nodes)
-    node2 = TextNode("This is text with a `code block` word", text_type_text)
-    # new_nodes2 = split_nodes_delimiter([node2], "`",  text_type_code)
-    
-    node3 = TextNode("This is a regular text", text_type_text)
-    new_nodes = split_nodes_delimiter([node1, node2, node3], "`", text_type_code)
-    print(new_nodes)
 
+    node2 = TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    text_type_text,
+    )
+    new_nodes2 = split_nodes_link([node2])
+    print(new_nodes2)
 
 text_type_text="text"
 text_type_code="code"
 text_type_bold="bold"
 text_type_italic="italic"
-
-
+text_type_link="link"
+text_type_image="image"
 
 class TextNode:
     def __init__(self, text, text_type, url=None):
@@ -48,7 +44,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node)
         else:    
             split_text = node.text.split(delimiter)
-            identifier = []
             nodes = []
             for i in range(len(split_text)):
                 if i % 2 == 0:
@@ -66,9 +61,60 @@ def split_nodes_image(old_nodes):
         if node.text_type != "text":
             new_nodes.append(node)
         else:
-            links_list_of_tuples = extract_markdown_links(node.text)
-            images_list_of_tuples = extract_markdown_images(node.text)
+            list_of_text_and_images = re.split(r"(!\[.*?\]\(.*?\))", node.text)
+            
+            for item in list_of_text_and_images:
+                extracted_image_tuples = extract_markdown_images(item)
+                if len(extracted_image_tuples) == 0:
+                    if item != "":
+                        new_nodes.append(TextNode(item, text_type_text))
+                        
+                else:
+                    for image_tuple in extracted_image_tuples:
+                        new_nodes.append(TextNode(image_tuple[0], text_type_image, image_tuple[1]))
+                        
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != "text":
+            new_nodes.append(node)
+        else:
+            list_of_text_and_links = re.split(r"(\[.*?\]\(.*?\))", node.text)
+
+            for item in list_of_text_and_links:
+                extracted_link_tuples = extract_markdown_links(item)
+                if len(extracted_link_tuples) == 0:
+                    if item != "":
+                        new_nodes.append(TextNode(item, text_type_text))
+                else:
+                    for link_tuple in extracted_link_tuples:
+                        new_nodes.append(TextNode(link_tuple[0], text_type_link, link_tuple[1]))
+
     return new_nodes
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+
+[
+TextNode(These are images , text, None), 
+TextNode(alt text, image, https://www.boot.dev), 
+TextNode( and , text, None), 
+TextNode(alt text 2, image, https://www.youtube.com/@bootdotdev)]
+
+
+"""
+
+
+"""
+[
+TextNode(This is text with a link , text, None), 
+TextNode(to boot dev, link, https://www.boot.dev), 
+TextNode( and , text, None), 
+TextNode(to youtube, link, https://www.youtube.com/@bootdotdev)]
+"""
