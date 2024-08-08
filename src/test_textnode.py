@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link
+from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnodes
 
 text_type_text="text"
 text_type_code="code"
@@ -37,7 +37,10 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     def test_code_split(self):
         node = TextNode("`code block` at the start and `at the end`", text_type_text)        
         new_nodes = split_nodes_delimiter([node], "`", text_type_code)
-        expected = [TextNode("code block", "code", None), TextNode(" at the start and ", "text", None), TextNode("at the end", "code", None)]
+        expected = [
+            TextNode("code block", "code", None), 
+            TextNode(" at the start and ", "text", None), 
+            TextNode("at the end", "code", None)]
         actual = new_nodes
         self.assertEqual(expected, actual)
 
@@ -84,6 +87,28 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         expected = [node]
         self.assertEqual(new_nodes, expected)
 
+    def test_code_split_embedded_bold(self):
+        node = TextNode("This is some **bold** text that also contains a `piece of code` within it", text_type_text)
+        new_nodes = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+            TextNode("This is some **bold** text that also contains a ", "text", None),
+            TextNode("piece of code", "code", None),
+            TextNode(" within it", "text", None)
+            ]
+        actual = new_nodes
+        self.assertEqual(expected, actual)
+
+    def test_bold_split_embedded_code(self):
+        node = TextNode("This is some **bold** text that also contains a `piece of code` within it", text_type_text)
+        new_nodes = split_nodes_delimiter([node], "**", text_type_bold)
+        expected = [
+            TextNode("This is some ", "text", None),
+            TextNode("bold", "bold", None),
+            TextNode(" text that also contains a `piece of code` within it", "text", None)
+            ]
+        actual = new_nodes
+        self.assertEqual(expected, actual)
+
 
 class TestSplitNodesImage(unittest.TestCase):
     def test_split_node_image(self):
@@ -94,6 +119,19 @@ class TestSplitNodesImage(unittest.TestCase):
             TextNode("alt text", "image", "https://www.boot.dev"), 
             TextNode(" and ", "text"), 
             TextNode("alt text 2", "image", "https://www.youtube.com/@bootdotdev")]
+        actual = split_nodes_image([node])
+        self.assertEqual(actual, expected)
+
+    def test_split_node_image_embedded_code(self):
+        node = TextNode(
+        "These are images ![alt text](https://www.boot.dev) and ![alt text 2](https://www.youtube.com/@bootdotdev) but surprise! we also have a `piece of code`", text_type_text)
+        expected = [
+            TextNode("These are images ", "text"), 
+            TextNode("alt text", "image", "https://www.boot.dev"), 
+            TextNode(" and ", "text"), 
+            TextNode("alt text 2", "image", "https://www.youtube.com/@bootdotdev"),
+            TextNode(" but surprise! we also have a `piece of code`", "text")
+            ]
         actual = split_nodes_image([node])
         self.assertEqual(actual, expected)
 
@@ -115,7 +153,40 @@ class TestSplitNodesLink(unittest.TestCase):
         actual = split_nodes_link([node])
         self.assertEqual(actual, expected)
 
+    def test_split_node_link_embedded_italics(self):
+        node = TextNode(
+        "This is *italics text* with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+        text_type_text,
+        )
+        expected = [
+            TextNode("This is *italics text* with a link ", text_type_text),
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+            TextNode(" and ", text_type_text),
+            TextNode(
+                "to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
+        actual = split_nodes_link([node])
+        self.assertEqual(actual, expected)
 
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", "text", None), 
+            TextNode("text", "bold", None), 
+            TextNode(" with an ", "text", None), 
+            TextNode("italic", "italic", None), 
+            TextNode(" word and a ", "text", None), 
+            TextNode("code block", "code", None), 
+            TextNode(" and an ", "text", None), 
+            TextNode("obi wan image", "image", "https://i.imgur.com/fJRm4Vk.jpeg"), 
+            TextNode(" and a ", "text", None), 
+            TextNode("link", "link", "https://boot.dev")
+        ]  
+        actual = text_to_textnodes(text)
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()

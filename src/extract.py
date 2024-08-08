@@ -7,7 +7,7 @@ def main():
     # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
     # print(extract_markdown_links(text))   
 
-    text = "[to boot dev](https://www.boot.dev)"
+    text = "[top boot dev](https://www.boot.dev)"
     print(extract_markdown_links(text)) 
 
 def extract_markdown_images(text):

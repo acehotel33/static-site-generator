@@ -3,17 +3,8 @@ from extract import extract_markdown_images, extract_markdown_links
 
 
 def main():
-    node = TextNode(
-    "These are images ![alt text](https://www.boot.dev) and ![alt text 2](https://www.youtube.com/@bootdotdev)", text_type_text)
-    new_nodes = split_nodes_image([node])
-    # print(new_nodes)
-
-    node2 = TextNode(
-    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-    text_type_text,
-    )
-    new_nodes2 = split_nodes_link([node2])
-    print(new_nodes2)
+    text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    print(text_to_textnodes(text))
 
 text_type_text="text"
 text_type_code="code"
@@ -94,27 +85,14 @@ def split_nodes_link(old_nodes):
 
     return new_nodes
 
+def text_to_textnodes(text):
+    text_node = TextNode(text, text_type_text)
+    split_code = split_nodes_delimiter([text_node], '`', text_type_code)    
+    split_bold = split_nodes_delimiter(split_code, '**', text_type_bold)
+    split_italic = split_nodes_delimiter(split_bold, '*', text_type_italic)
+    split_image = split_nodes_image(split_italic)
+    split_link = split_nodes_link(split_image)
+    return split_link
+
 if __name__ == "__main__":
     main()
-
-
-
-"""
-
-[
-TextNode(These are images , text, None), 
-TextNode(alt text, image, https://www.boot.dev), 
-TextNode( and , text, None), 
-TextNode(alt text 2, image, https://www.youtube.com/@bootdotdev)]
-
-
-"""
-
-
-"""
-[
-TextNode(This is text with a link , text, None), 
-TextNode(to boot dev, link, https://www.boot.dev), 
-TextNode( and , text, None), 
-TextNode(to youtube, link, https://www.youtube.com/@bootdotdev)]
-"""
