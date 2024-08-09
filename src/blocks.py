@@ -1,6 +1,6 @@
 def main():
     markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
-    block = '# hello'
+    block = '```code block```'
     print(block_to_block_type(block))
     # print(markdown_to_blocks(markdown))
 
@@ -25,8 +25,11 @@ def block_to_block_type(block):
         headers_list = ['none', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
         if block[header_num] == ' ':
            return headers_list[header_num]
-    
+
+    # check for code type
+    if block[:3] == '```' and block[:3] == block[-3:] and len(block) >= 6:
+        return 'code'
+        
 
 if __name__=="__main__":
     main()
-
