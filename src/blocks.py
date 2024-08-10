@@ -1,9 +1,12 @@
+from textnode import text_to_textnodes
+
 def main():
     markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
 
-    block = "> This is line one.\n> This is line two\n> This is line three..."
+    block = "> This is line one containg ```code```.\n> This is line two that actually has ![alt-image](www.image.com)\n> This is line three that is so **bold**..."
     # print(block_to_block_type(block))
     # print(markdown_to_blocks(markdown))
+    print(block_to_children(block, 'a'))
 
 def markdown_to_blocks(markdown):
     """
@@ -85,25 +88,41 @@ def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
     parent_nodes = []
     for block in blocks:
-        block_type = block_to_block_type(block)
-        block_tag = block_type_to_tag(block_type)
-        block_text_nodes = text_to_textnodes(block)
-        block_children = block_text_nodes_to_children(block_text_nodes, block_tag)
+        block_tag = block_type_to_tag(block_to_block_type(block))
+        block_children = block_to_children(block, block_tag)
         parent_block = ParentNode(block_tag, block_children, None)
         parent_nodes.append(parent_blocK)
 
-# def block_type_to_tag(block_type):
-#     """
-#     Helper function that takes as input block type and returns corresponding tag value in string form
-#     """
+def block_type_to_tag(block_type):
+    """
+    Helper function that takes as input block type and returns corresponding tag value in string form
+    """
+    return None
 
-# def block_text_nodes_to_children(block_text_nodes, block_tag):
-#     """
-#     Helper function that takes TextNodes within a block and returns a nested ParentTag with tagged children.
+def block_to_children(block, block_tag):
+    """
+    Helper function that takes TextNodes within a block and returns a nested ParentTag with tagged children.
+    """
+    block_lines = block.split('\n')
+    block_text_nodes = []
+    for line in block_lines:
+        line_nodes = text_to_textnodes(line)
+        block_text_nodes.extend(line_nodes)
+    return block_text_nodes
 
 
-#     """
-
+"""
+[
+    TextNode(> This is line one containg , text, None), 
+    TextNode(code, code, None), 
+    TextNode(., text, None), 
+    TextNode(> This is line two that actually has , text, None), 
+    TextNode(alt-image, image, www.image.com), 
+    TextNode(> This is line three that is so , text, None), 
+    TextNode(bold, bold, None), 
+    TextNode(..., text, None)
+]
+"""
 
 if __name__=="__main__":
     main()
