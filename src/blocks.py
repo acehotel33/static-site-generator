@@ -1,14 +1,15 @@
 def main():
     markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
-    # block = "> This is line one.\n> This is line two\n> This is line three..."
-    # block = "* This is line one.\n- This is line two."
-    # block = "1. hello\n2. can you hear me\n3. i was wondering if after all these years you'd like to meet"
-    # block = "1. 2. 3. \n2. \n3. "
-    # block = "hello mate"
-    print(block_to_block_type(block))
+
+    block = "> This is line one.\n> This is line two\n> This is line three..."
+    # print(block_to_block_type(block))
     # print(markdown_to_blocks(markdown))
 
 def markdown_to_blocks(markdown):
+    """
+    Takes markdown text and converts it into a stripped list of separated blocks.
+    """
+
     list_of_blocks = markdown.split('\n\n')
     stripped_list_of_blocks = []
     for block in list_of_blocks:
@@ -17,6 +18,10 @@ def markdown_to_blocks(markdown):
     return stripped_list_of_blocks
 
 def block_to_block_type(block):
+    """
+    Takes a block as input and returns its type: header, code, ordered list, unordered list, quote, or normal paragraph.
+    """
+    
     # check for heading type
     if block[0] == "#":
         length_to_check = min(6, len(block))
@@ -65,6 +70,40 @@ def block_to_block_type(block):
         if is_ordered:
             return 'ordered list'
 
-    return 'normal paragraph'
+    return 'p'
+
+def markdown_to_html_node(markdown):
+    """
+    Takes full markdown document and returns a single HTML node that contains children with nested elements.
+
+    Markdown -> Blocks -> 
+    Text -> TextNode -> HTMLNode
+
+    Split markdown into blocks of text. For each block, split the text into TextNodes. Convert each TextNode into HTMLNode.
+    """
+
+    blocks = markdown_to_blocks(markdown)
+    parent_nodes = []
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        block_tag = block_type_to_tag(block_type)
+        block_text_nodes = text_to_textnodes(block)
+        block_children = block_text_nodes_to_children(block_text_nodes, block_tag)
+        parent_block = ParentNode(block_tag, block_children, None)
+        parent_nodes.append(parent_blocK)
+
+# def block_type_to_tag(block_type):
+#     """
+#     Helper function that takes as input block type and returns corresponding tag value in string form
+#     """
+
+# def block_text_nodes_to_children(block_text_nodes, block_tag):
+#     """
+#     Helper function that takes TextNodes within a block and returns a nested ParentTag with tagged children.
+
+
+#     """
+
+
 if __name__=="__main__":
     main()

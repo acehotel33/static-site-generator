@@ -27,6 +27,10 @@ class TextNode:
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    """
+    A helper function that takes a list of nodes and--if Markdown of text_type detected within each--splits them into further delimited nodes. Outputs a new list of more granularly delimited nodes.
+    """
+
     new_nodes = []
     for node in old_nodes:
         if node.text.count(delimiter) % 2 != 0:
@@ -86,6 +90,9 @@ def split_nodes_link(old_nodes):
     return new_nodes
 
 def text_to_textnodes(text):
+    """
+    Takes Markdown text for input and returns a granularly split list of TextNodes each with respective text_type.
+    """
     text_node = TextNode(text, text_type_text)
     split_code = split_nodes_delimiter([text_node], '`', text_type_code)    
     split_bold = split_nodes_delimiter(split_code, '**', text_type_bold)

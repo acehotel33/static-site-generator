@@ -45,6 +45,14 @@ class HTMLNode:
         raise NotImplementedError
 
     def props_to_html(self):
+        """
+        Formats props of a node into an HTML string to be used within opening tag.
+
+        >>> node = HTMLNode("img", "some image", None, {"src":"image.com", "quality":"high"})
+        >>> node.props_to_html()
+        >>>  src="image.com" quality="high"
+        """
+        
         if self.props == None:
             return ""
         prop_string = ""
@@ -62,6 +70,10 @@ class ParentNode(HTMLNode):
         super().__init__(tag, None, children, props)
 
     def to_html(self):
+        """
+        A ParentNode method that returns its HTML-formatted self, recursively including its children node.
+        """
+
         open_tag = f"<{self.tag}{self.props_to_html()}>"
         body = ""
         for child in self.children:
@@ -78,6 +90,18 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
 
     def to_html(self):
+        """
+        A LeafNode method that returns its HTML-formatted self.
+
+        >>> leaf = LeafNode("a", "menu", None, {"href": "link.com"})
+        >>> print(LeafNode.to_html())
+        >>> <a href="link.com">menu</a>
+
+        >>> leaf = LeafNode("div", "section", None, {"className": "epic.com"})
+        >>> print(LeafNode.to_html())
+        >>> <div className="epic.com">section</div>
+        """
+        
         if self.tag==None:
             return self.value
         open_tag = f"<{self.tag}{self.props_to_html()}>"
@@ -88,6 +112,22 @@ class LeafNode(HTMLNode):
         return html
 
 def text_node_to_html_node(text_node):
+    """
+    A function that takes a text node and converts it to a leaf node.
+    Input: TextNode
+    Output: LeafNode
+
+    >>> text_node = TextNode('This is bold tex', 'bold')
+    >>> html_node = text_node_to_html_node(text)
+    >>> print(html_node)
+    >>> LeafNode("b", "This is bold text")
+
+    >>> text_node = TextNode('This is some link', 'link', 'www.link.com')
+    >>> html_node = text_node_to_html_node(text)
+    >>> print(html_node)
+    >>> LeafNode("a", "This is some link", {"href": "www.link.com"})
+    """ 
+
     possible_types = ["text", "bold", "italic", "code", "link", "image"]
     if text_node.text_type not in possible_types:
         raise Exception("Incompatible text node type")

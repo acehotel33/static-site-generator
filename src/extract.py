@@ -11,6 +11,9 @@ def main():
     print(extract_markdown_links(text)) 
 
 def extract_markdown_images(text):
+    """
+    Extracts markdown images from given text and returns a list of tuples for all: (alt_text, link)
+    """
     list_of_tuples = []
     list_of_regex = re.findall(r"\!\[.*?\]\(.*?\)", text)
     for match in list_of_regex:
@@ -24,6 +27,9 @@ def extract_markdown_images(text):
     return list_of_tuples
 
 def extract_markdown_links(text):
+    """
+    Extracts markdown links from given text and returns a list of tuples for all: (alt_text, link)
+    """
     list_of_tuples = []
     list_of_regex = re.findall(r"(?<!!)\[.*?\]\(.*?\)", text)
     for match in list_of_regex:
