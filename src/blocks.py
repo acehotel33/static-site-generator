@@ -1,12 +1,41 @@
 from textnode import text_to_textnodes
+from htmlnode import HTMLNode, ParentNode, LeafNode, text_node_to_html_node
+
 
 def main():
     markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
 
-    block = "> This is line one containg ```code```.\n> This is line two that actually has ![alt-image](www.image.com)\n> This is line three that is so **bold**..."
+    markdown = "### This is heading 3\n\n## Here we have heading 2\n\nAnd it is followed by a paragraph\n\n```Below it is some code block```\n\n> As well as\n> Some quotes\n\nThrowing in some **bold** and *italic* text for good measure"
+
+    # block = "> This is line one containg ```code```.\n> This is line two that actually has ![alt-image](www.image.com)\n> This is line three that is so **bold**..."
+
     # print(block_to_block_type(block))
     # print(markdown_to_blocks(markdown))
-    print(block_to_children(block, 'a'))
+    # print(block_to_children(block, 'a'))
+    # print(markdown_to_html_node(markdown))
+    # print(block_clean_of_markdown(block))
+
+    my_node = markdown_to_html_node(markdown)
+    print(my_node.to_html())
+
+
+"""
+<div>
+    <h3>This is heading 3</h3>
+    <h2>Here we have heading 2</h2>
+    <p>And it is followed by a paragraph</p>
+    <code>Below it is some code block</code>
+    <blockquote>
+        As well as\n
+        Some quotes
+    </blockquote>
+    <p>
+        Throwing in some <b>bold</b> and <i>italic</i> text for good measure
+    </p>
+</div>
+
+"""
+
 
 def markdown_to_blocks(markdown):
     """
@@ -26,6 +55,8 @@ def block_to_block_type(block):
     """
     
     # check for heading type
+    if len(block) == 0:
+        return 'p'
     if block[0] == "#":
         length_to_check = min(6, len(block))
         number_of_hashtags = block[:length_to_check].count('#')
@@ -52,7 +83,7 @@ def block_to_block_type(block):
             if line[0] != '>':
                 is_quote = False
         if is_quote:
-            return 'quote'
+            return 'blockquote'
 
     # check for unordered list
     if block[0] in ['*', '-']:
@@ -61,7 +92,7 @@ def block_to_block_type(block):
             if not (line[:2] == '* ' or line[:2] == '- '):
                 is_unordered = False
         if is_unordered:
-            return 'unordered list'
+            return 'ul'
 
     # check for ordered list
     if block[:2] == "1.":
@@ -71,7 +102,7 @@ def block_to_block_type(block):
             if split_lines[i][:3] != f'{i+1}. ':
                 is_ordered = False
         if is_ordered:
-            return 'ordered list'
+            return 'ol'
 
     return 'p'
 
@@ -85,13 +116,59 @@ def markdown_to_html_node(markdown):
     Split markdown into blocks of text. For each block, split the text into TextNodes. Convert each TextNode into HTMLNode.
     """
 
+    # blocks = markdown_to_blocks(markdown)
+    # parent_nodes = []
+    # for block in blocks:
+    #     block_tag = block_type_to_tag(block_to_block_type(block))
+    #     block_children = block_to_children(block, block_tag)
+    #     parent_block = ParentNode(block_tag, block_children, None)
+    #     parent_nodes.append(parent_block)
+
+
     blocks = markdown_to_blocks(markdown)
+    # print(blocks)
     parent_nodes = []
     for block in blocks:
-        block_tag = block_type_to_tag(block_to_block_type(block))
-        block_children = block_to_children(block, block_tag)
-        parent_block = ParentNode(block_tag, block_children, None)
-        parent_nodes.append(parent_blocK)
+        clean_block = block_clean_of_markdown(block)
+        # print(clean_block)
+        block_tag = block_to_block_type(block)
+        # print(block_tag)
+        text_children = text_to_textnodes(clean_block)
+        nodes_children = []
+        for child in text_children:
+            nodes_child = text_node_to_html_node(child)
+            nodes_children.append(nodes_child)
+        # print(children)
+        parent_node = ParentNode(block_tag, nodes_children)
+        # print(parent_node)
+        parent_nodes.append(parent_node)
+    final_HTML_node = ParentNode('div', parent_nodes)
+    return final_HTML_node
+
+possible_block_tags = ['h1','h2','h3','h4','h5','h6','code','blockquote','ul','ol','p']
+headings = ['h1','h2','h3','h4','h5','h6']
+
+def block_clean_of_markdown(block):
+    block_tag = block_to_block_type(block)
+    if block_tag in headings:
+        return block.lstrip('#').strip()
+    if block_tag == 'code':
+        return block.strip('```').strip()
+    if block_tag == 'blockquote':
+        lines = block.splitlines()
+        cleaned_lines = [line.lstrip('> ').strip() for line in lines]
+        return "\n".join(cleaned_lines)
+    if block_tag == 'ul':
+        lines = block.splitlines()
+        cleaned_lines = [line.lstrip('* ').strip() for line in lines]
+        return "\n".join(cleaned_lines)
+    if block_tag == 'ol':
+        lines = block.splitlines()
+        cleaned_lines = [line.lstrip(f'{i+1}. ').strip() for i, line in enumerate(lines)]
+        return "\n".join(cleaned_lines)
+    if block_tag == 'p':
+        return block
+    raise Exception('No match for block tag was found within possible block tags')
 
 def block_type_to_tag(block_type):
     """
