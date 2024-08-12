@@ -3,7 +3,6 @@ from htmlnode import HTMLNode, ParentNode, LeafNode, text_node_to_html_node
 
 
 def main():
-    markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
 
     markdown = "### This is heading 3\n\n## Here we have heading 2\n\nAnd it is followed by a paragraph\n\n```Below it is some code block```\n\n> As well as\n> Some quotes\n\nThrowing in some **bold** and *italic* text for good measure"
 
