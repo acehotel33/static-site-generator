@@ -88,6 +88,9 @@ class LeafNode(HTMLNode):
         if value==None:
             raise ValueError("Leaf node needs a value!")
         super().__init__(tag, value, None, props)
+    
+    def set_tag(self, tag):
+        self.tag = tag
 
     def to_html(self):
         """
@@ -128,7 +131,7 @@ def text_node_to_html_node(text_node):
     >>> LeafNode("a", "This is some link", {"href": "www.link.com"})
     """ 
 
-    possible_types = ["text", "bold", "italic", "code", "link", "image"]
+    possible_types = ["text", "bold", "italic", "code", "link", "image", "li"]
     if text_node.text_type not in possible_types:
         raise Exception("Incompatible text node type")
     value = text_node.text
@@ -148,6 +151,8 @@ def text_node_to_html_node(text_node):
         tag = "img"
         props = {"src": text_node.url, "alt": text_node.text}
         value = ""
+    elif text_node.text_type == "li":
+        tag = "li"
     leaf_node_of_text = LeafNode(tag, value, props)
     return leaf_node_of_text
 

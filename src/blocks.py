@@ -1,4 +1,4 @@
-from textnode import text_to_textnodes
+from textnode import text_to_textnodes, TextNode
 from htmlnode import HTMLNode, ParentNode, LeafNode, text_node_to_html_node
 
 
@@ -45,7 +45,7 @@ def markdown_to_blocks(markdown):
     stripped_list_of_blocks = []
     for block in list_of_blocks:
         if block != "":
-            stripped_list_of_blocks.append(block.strip())
+            stripped_list_of_blocks.append(block)
     return stripped_list_of_blocks
 
 def block_to_block_type(block):
@@ -129,14 +129,20 @@ def markdown_to_html_node(markdown):
     parent_nodes = []
     for block in blocks:
         clean_block = block_clean_of_markdown(block)
-        # print(clean_block)
         block_tag = block_to_block_type(block)
-        # print(block_tag)
-        text_children = text_to_textnodes(clean_block)
+        text_children = []
         nodes_children = []
+        if block_tag == "ul" or block_tag == "ol":
+            block_lines = clean_block.splitlines()
+            for line in block_lines:
+                text_children.append(TextNode(line, "li"))
+            
+        else:    
+            text_children = text_to_textnodes(clean_block)
         for child in text_children:
-            nodes_child = text_node_to_html_node(child)
-            nodes_children.append(nodes_child)
+            node_child = text_node_to_html_node(child)
+            nodes_children.append(node_child)
+
         # print(children)
         parent_node = ParentNode(block_tag, nodes_children)
         # print(parent_node)
@@ -150,26 +156,26 @@ headings = ['h1','h2','h3','h4','h5','h6']
 def block_clean_of_markdown(block):
     block_tag = block_to_block_type(block)
     if block_tag in headings:
-        return block.lstrip('#').strip()
+        return block.lstrip('#')
     if block_tag == 'code':
-        return block.strip('```').strip()
+        return block.strip('```')
     if block_tag == 'blockquote':
         lines = block.splitlines()
-        cleaned_lines = [line.lstrip('> ').strip() for line in lines]
+        cleaned_lines = [line.lstrip('> ') for line in lines]
         return "\n".join(cleaned_lines)
     if block_tag == 'ul':
         lines = block.splitlines()
-        cleaned_lines = [line.lstrip('* ').strip() for line in lines]
+        cleaned_lines = [line.lstrip('* ') for line in lines]
         return "\n".join(cleaned_lines)
     if block_tag == 'ol':
         lines = block.splitlines()
-        cleaned_lines = [line.lstrip(f'{i+1}. ').strip() for i, line in enumerate(lines)]
+        cleaned_lines = [line.lstrip(f'{i+1}. ') for i, line in enumerate(lines)]
         return "\n".join(cleaned_lines)
     if block_tag == 'p':
         return block
     raise Exception('No match for block tag was found within possible block tags')
 
-    
+
 
 """
 [
