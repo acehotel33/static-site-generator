@@ -169,23 +169,7 @@ def block_clean_of_markdown(block):
         return block
     raise Exception('No match for block tag was found within possible block tags')
 
-def block_type_to_tag(block_type):
-    """
-    Helper function that takes as input block type and returns corresponding tag value in string form
-    """
-    return None
-
-def block_to_children(block, block_tag):
-    """
-    Helper function that takes TextNodes within a block and returns a nested ParentTag with tagged children.
-    """
-    block_lines = block.split('\n')
-    block_text_nodes = []
-    for line in block_lines:
-        line_nodes = text_to_textnodes(line)
-        block_text_nodes.extend(line_nodes)
-    return block_text_nodes
-
+    
 
 """
 [

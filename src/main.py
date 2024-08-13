@@ -1,17 +1,27 @@
 import os
 import shutil
 
+from blocks import markdown_to_html_node, markdown_to_blocks, block_to_block_type
+
 def main():
     # print(os.path.exists(destination_dir))
     # print(f"Contents of source directory:\n{os.listdir(source_dir)}")
     # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
     # delete_contents_of_dir(destination_dir)
     # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
-    copy_source_contents_to_destination_dir(source_dir, destination_dir)
     # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
 
-static_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static')
-public_dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'public')
+    copy_source_contents_to_destination_dir(source_dir, destination_dir)
+    generate_page(from_path, template_path, dest_path)
+
+main_path = os.path.dirname(os.path.abspath(__file__))
+
+static_dir_path = os.path.join(main_path, '..', 'static')
+public_dir_path = os.path.join(main_path, '..', 'public')
+
+from_path = os.path.join(main_path, '..', 'content','index.md')
+template_path = os.path.join(main_path, '..', 'template.html')
+dest_path = os.path.join(main_path, '..', 'public')
 
 source_dir = static_dir_path
 destination_dir = public_dir_path
@@ -47,6 +57,31 @@ def copy_source_contents_to_destination_dir(source_path, destination_path):
                     shutil.copy(file_source_path, destination_path)
     else:
         print(f"One of two paths is invalid: {source_path} or {destination_path}")
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    md_contents = open(from_path, "r").read()
+    template = open(template_path, "r").read()
+    
+    node_contents = markdown_to_html_node(md_contents)
+    html_contents = node_contents.to_html()
+    html_title = extract_title(from_path)
+
+    new_html = template.replace("{{ Title }}", html_title).replace("{{ Content }}", html_contents)
+
+    os.makedirs(dest_path, exist_ok=True)
+    file_path = os.path.join(dest_path, 'index.html')
+    with open(file_path, 'w') as file:
+        file.write(new_html)
+
+def extract_title(from_path):
+    md_contents = open(from_path, "r").read()
+    md_blocks = markdown_to_blocks(md_contents)
+    for block in md_blocks:
+        if block_to_block_type(block) == "h1":
+            return block.lstrip("#")
 
 main()
 
