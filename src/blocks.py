@@ -6,14 +6,6 @@ def main():
 
     markdown = "### This is heading 3\n\n## Here we have heading 2\n\nAnd it is followed by a paragraph\n\n```Below it is some code block```\n\n> As well as\n> Some quotes\n\nThrowing in some **bold** and *italic* text for good measure"
 
-    # block = "> This is line one containg ```code```.\n> This is line two that actually has ![alt-image](www.image.com)\n> This is line three that is so **bold**..."
-
-    # print(block_to_block_type(block))
-    # print(markdown_to_blocks(markdown))
-    # print(block_to_children(block, 'a'))
-    # print(markdown_to_html_node(markdown))
-    # print(block_clean_of_markdown(block))
-
     my_node = markdown_to_html_node(markdown)
     print(my_node.to_html())
 

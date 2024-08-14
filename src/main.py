@@ -4,19 +4,10 @@ import shutil
 from blocks import markdown_to_html_node, markdown_to_blocks, block_to_block_type
 
 def main():
-    # print(os.path.exists(destination_dir))
-    # print(f"Contents of source directory:\n{os.listdir(source_dir)}")
-    # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
-    # delete_contents_of_dir(destination_dir)
-    # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
-    # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
-
     copy_source_contents_to_destination_dir(source_dir, destination_dir)
-    # generate_page(from_path, template_path, dest_path)
     generate_pages_recursive(dir_path_content, template_path, dest_dir_path)
 
 main_path = os.path.dirname(os.path.abspath(__file__))
-
 static_dir_path = os.path.join(main_path, '..', 'static')
 public_dir_path = os.path.join(main_path, '..', 'public')
 
@@ -29,7 +20,6 @@ destination_dir = public_dir_path
 
 dir_path_content = os.path.join(main_path, '..', 'content')
 dest_dir_path = os.path.join(main_path, '..', 'public')
-
 
 def delete_contents_of_dir(dir_path):
     if os.path.exists(dir_path):
@@ -63,10 +53,9 @@ def copy_source_contents_to_destination_dir(source_path, destination_path):
     else:
         print(f"One of two paths is invalid: {source_path} or {destination_path}")
 
-
 def generate_page(from_path, template_path, dest_path):
-    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
-
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}\n")
+    
     md_contents = open(from_path, "r").read()
     template = open(template_path, "r").read()
     
@@ -78,26 +67,18 @@ def generate_page(from_path, template_path, dest_path):
 
     os.makedirs(dest_path, exist_ok=True)
     parent_folder = os.path.dirname(from_path)
-    print(f"parent_folder: {parent_folder}")
 
     if not parent_folder.endswith('content'):
         parent_folder_name = os.path.basename(parent_folder)
         parent_folder_path = os.path.join(dest_path, parent_folder_name)
-        print("entered nested folder")
         os.makedirs(parent_folder_path, exist_ok=True)
         file_path = os.path.join(parent_folder_path, 'index.html')
-        print(f"dest_path: {file_path}")
-        print("\n")
         with open(file_path, 'w') as file:
             file.write(new_html)
     else:
         file_path = os.path.join(dest_path, 'index.html')
-        print(f"dest_path: {file_path}")
-        print("\n")
-
         with open(file_path, 'w') as file:
             file.write(new_html)
-
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     if os.path.exists(dir_path_content):
@@ -110,7 +91,6 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 item_path = os.path.join(dir_path_content, item)
                 generate_pages_recursive(item_path, template_path, dest_dir_path)
 
-
 def extract_title(from_path):
     md_contents = open(from_path, "r").read()
     md_blocks = markdown_to_blocks(md_contents)
@@ -118,6 +98,7 @@ def extract_title(from_path):
         if block_to_block_type(block) == "h1":
             return block.lstrip("# ")
 
-main()
+if __name__ == "__main__":
+    main()
 
 
