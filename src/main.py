@@ -12,7 +12,8 @@ def main():
     # print(f"Contents of destination directory:\n{os.listdir(destination_dir)}")
 
     copy_source_contents_to_destination_dir(source_dir, destination_dir)
-    generate_page(from_path, template_path, dest_path)
+    # generate_page(from_path, template_path, dest_path)
+    generate_pages_recursive(dir_path_content, template_path, dest_dir_path)
 
 main_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,6 +26,10 @@ dest_path = os.path.join(main_path, '..', 'public')
 
 source_dir = static_dir_path
 destination_dir = public_dir_path
+
+dir_path_content = os.path.join(main_path, '..', 'content')
+dest_dir_path = os.path.join(main_path, '..', 'public')
+
 
 def delete_contents_of_dir(dir_path):
     if os.path.exists(dir_path):
@@ -71,12 +76,40 @@ def generate_page(from_path, template_path, dest_path):
 
     new_html = template.replace("{{ Title }}", html_title).replace("{{ Content }}", html_contents)
 
-    print(new_html)
-
     os.makedirs(dest_path, exist_ok=True)
-    file_path = os.path.join(dest_path, 'index.html')
-    with open(file_path, 'w') as file:
-        file.write(new_html)
+    parent_folder = os.path.dirname(from_path)
+    print(f"parent_folder: {parent_folder}")
+
+    if not parent_folder.endswith('content'):
+        parent_folder_name = os.path.basename(parent_folder)
+        parent_folder_path = os.path.join(dest_path, parent_folder_name)
+        print("entered nested folder")
+        os.makedirs(parent_folder_path, exist_ok=True)
+        file_path = os.path.join(parent_folder_path, 'index.html')
+        print(f"dest_path: {file_path}")
+        print("\n")
+        with open(file_path, 'w') as file:
+            file.write(new_html)
+    else:
+        file_path = os.path.join(dest_path, 'index.html')
+        print(f"dest_path: {file_path}")
+        print("\n")
+
+        with open(file_path, 'w') as file:
+            file.write(new_html)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if os.path.exists(dir_path_content):
+        if os.path.isfile(dir_path_content):
+            if dir_path_content.endswith('.md'):
+                generate_page(dir_path_content, template_path, dest_dir_path)
+        elif os.path.isdir(dir_path_content):
+            dir_items = os.listdir(dir_path_content)
+            for item in dir_items:
+                item_path = os.path.join(dir_path_content, item)
+                generate_pages_recursive(item_path, template_path, dest_dir_path)
+
 
 def extract_title(from_path):
     md_contents = open(from_path, "r").read()

@@ -115,14 +115,6 @@ def markdown_to_html_node(markdown):
     Split markdown into blocks of text. For each block, split the text into TextNodes. Convert each TextNode into HTMLNode.
     """
 
-    # blocks = markdown_to_blocks(markdown)
-    # parent_nodes = []
-    # for block in blocks:
-    #     block_tag = block_type_to_tag(block_to_block_type(block))
-    #     block_children = block_to_children(block, block_tag)
-    #     parent_block = ParentNode(block_tag, block_children, None)
-    #     parent_nodes.append(parent_block)
-
 
     blocks = markdown_to_blocks(markdown)
     # print(blocks)
@@ -138,75 +130,25 @@ def markdown_to_html_node(markdown):
                 text_children.append(TextNode(line, "li"))
         else:    
             text_children = text_to_textnodes(clean_block)
-        
-        print(f"clean_block: {clean_block}")
-        print(f"block_tag: {block_tag}")
-        print(f"text_children: {text_children}")
 
         for child in text_children:
             if block_tag == "ul" or block_tag == "ol":
                 text_nodes_of_child = text_to_textnodes(child.text)
-                print(f"text_nodes_of_child: {text_nodes_of_child}")
-
                 if len(text_nodes_of_child) > 1:
                     children_nodes = []
                     for text_node in text_nodes_of_child:
                         children_nodes.append(text_node_to_html_node(text_node))
                     node_child = ParentNode("li", children_nodes)
-                    print(f"node_child: {node_child}")
                 else:
                     node_child = text_node_to_html_node(child)
             else:
                 node_child = text_node_to_html_node(child)
             nodes_children.append(node_child)
 
-        print(f"nodes_children: {nodes_children}")
-        print("\n\n")
-
         parent_node = ParentNode(block_tag, nodes_children)
         parent_nodes.append(parent_node)
     final_HTML_node = ParentNode('div', parent_nodes)
     return final_HTML_node
-
-
-#     """
-#     markdown_to_blocks(markdown) -> blocks [list]
-#     block_to_block_type(block) -> block_type "string"
-#     text_to_text_nodes(text) -> text_nodes [list]
-#     text_node_to_html_node(text_node) -> html_node LeafNode
-
-#     Split markdown into blocks.
-#     Each block is a parent node that recursively encapsulates children nodes down to lowest leaf node.
-#     """
-
-#     blocks = markdown_to_blocks(markdown)
-#     parent_nodes_from_blocks = []
-#     for block in blocks:
-#         block_to_nodes(block)
-
-# block = "> This is line one containg ```code```.\n> This is line two that actually has ![alt-image](www.image.com)\n> This is line three that is so **bold**..."
-
-# def block_to_nodes(block):
-#     """
-#     ParentNode(
-#         "quoteblock", 
-#         children=[
-#             LeafNode(
-#                 "text", "This is line one containing ", props=None
-#             ),
-#             LeafNode(
-#                 "code", "code", props=None
-#             ),
-#             LeafNode(
-#                 "text", "\n", props=None
-#             ),
-
-#         ], 
-#         props=None
-#     )
-#     """
-
-
 
 
 possible_block_tags = ['h1','h2','h3','h4','h5','h6','code','blockquote','ul','ol','p']
