@@ -71,6 +71,8 @@ def generate_page(from_path, template_path, dest_path):
 
     new_html = template.replace("{{ Title }}", html_title).replace("{{ Content }}", html_contents)
 
+    print(new_html)
+
     os.makedirs(dest_path, exist_ok=True)
     file_path = os.path.join(dest_path, 'index.html')
     with open(file_path, 'w') as file:
@@ -81,7 +83,7 @@ def extract_title(from_path):
     md_blocks = markdown_to_blocks(md_contents)
     for block in md_blocks:
         if block_to_block_type(block) == "h1":
-            return block.lstrip("#")
+            return block.lstrip("# ")
 
 main()
 
